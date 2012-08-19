@@ -38,14 +38,17 @@ public class DiscussNotifier extends Notifier {
 	public final String name;
 	public final String password;
 	public final String topicNumber;
+	public final boolean notifyWhenSuccess;
 
 	private WebClient client;
 
 	@DataBoundConstructor
-	public DiscussNotifier(String name, String password, String topicNumber) {
+	public DiscussNotifier(String name, String password, String topicNumber,
+			boolean notifyWhenSuccess) {
 		this.name = name;
 		this.password = password;
 		this.topicNumber = topicNumber;
+		this.notifyWhenSuccess = notifyWhenSuccess;
 	}
 
 	@Override
@@ -56,8 +59,9 @@ public class DiscussNotifier extends Notifier {
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
 			BuildListener listener) throws InterruptedException, IOException {
-		// 成功だったらスキップする
-		if (build.getResult().equals(Result.SUCCESS)) {
+		// 成功だったらスキップする("ビルドが成功した場合も通知する"がオフの場合)
+		if (build.getResult().equals(Result.SUCCESS)
+				&& notifyWhenSuccess == false) {
 			return true;
 		}
 
@@ -99,6 +103,8 @@ public class DiscussNotifier extends Notifier {
 			buildSummary = "ビルドが失敗しました\n";
 		} else if (build.getResult().equals(Result.UNSTABLE)) {
 			buildSummary = "ビルドが不安定です\n";
+		} else if (build.getResult().equals(Result.SUCCESS)) {
+			buildSummary = "ビルドが成功しました\n";
 		} else {
 			throw new RuntimeException("ビルドの結果が、想定していない状態です");
 		}
