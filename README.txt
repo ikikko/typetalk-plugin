@@ -8,3 +8,6 @@
 
 ** プラグインファイル（JPIファイル）を作成
 # gradle clean jpi
+
+- gradleをインストールしていない場合は、gradleの代わりにgradlew(もしくはgradlew.bat)を使用できます
+-- ref : http://gradle.monochromeroad.com/docs/userguide/gradle_wrapper.html
