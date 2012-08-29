@@ -19,7 +19,6 @@ import jenkins.model.Jenkins;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -68,11 +67,19 @@ public class DiscussNotifier extends Notifier {
 		listener.getLogger().println("Discussに通知中...");
 
 		// TODO HtmlUnit実行時のログが不要に出ているので、制御する
-		client = new WebClient(BrowserVersion.CHROME_16);
+		initClient();
 		login();
 		notifyMessage(build);
 
 		return true;
+	}
+
+	/**
+	 * WebClientの初期設定を行う
+	 */
+	private void initClient() {
+		client = new WebClient();
+		client.setJavaScriptEnabled(false);
 	}
 
 	/**

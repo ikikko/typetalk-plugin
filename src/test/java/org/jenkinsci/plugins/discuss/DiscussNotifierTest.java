@@ -7,7 +7,6 @@ import java.util.Date;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -24,11 +23,13 @@ public class DiscussNotifierTest {
 	private static final String ACTION_URI = "/teams/nulab/topics";
 	private static final String DISCUSS_TOPICS_URL = DISCUSS_URL + ACTION_URI;
 
-	// デフォルト(IE7)のWebClientだと、JS読み込み時にエラーが出る
-	private WebClient client = new WebClient(BrowserVersion.CHROME_16);
+	private WebClient client = new WebClient();
 
 	@Test
 	public void test() throws Exception {
+		// JS読み込み時にエラーが出ることがあるので、JSは無効にする
+		client.setJavaScriptEnabled(false);
+
 		login();
 		notifyMessage();
 	}
