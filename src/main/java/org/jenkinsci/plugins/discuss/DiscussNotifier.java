@@ -39,7 +39,8 @@ public class DiscussNotifier extends Notifier {
 	public final String topicNumber;
 	public final boolean notifyWhenSuccess;
 
-	private WebClient client;
+	// TODO HTMLUnitでのスクレイピングから、DiscussのAPIに切り替える
+	private transient WebClient client;
 
 	@DataBoundConstructor
 	public DiscussNotifier(String name, String password, String topicNumber,
