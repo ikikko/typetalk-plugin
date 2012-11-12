@@ -1,11 +1,15 @@
 package org.jenkinsci.plugins.discuss;
 
+import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.Result;
 import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
+import hudson.tasks.Publisher;
 
 import java.io.IOException;
 
@@ -41,13 +45,11 @@ public class DiscussNotifier extends Notifier {
 			return true;
 		}
 
-		listener.getLogger().println("Discussに通知中...");
+		// Discussに通知中...
+		listener.getLogger().println("Notifying to the discuss...");
 
 		Long topicId = Long.valueOf(topicNumber);
-
-		String buildSummary = makeBuildSummary(build);
-		String buildUrl = Jenkins.getInstance().getRootUrl() + build.getUrl();
-		String message = buildSummary + buildUrl;
+		String message = makeMessage(build);
 
 		Discuss discuss = new Discuss(apiKey);
 		discuss.postMessage(topicId, message);
@@ -55,21 +57,49 @@ public class DiscussNotifier extends Notifier {
 		return true;
 	}
 
-
-	private String makeBuildSummary(AbstractBuild<?, ?> build) {
-		final String buildSummary;
-		if (build.getResult().equals(Result.ABORTED)) {
-			buildSummary = "ビルドが中止されました\n";
-		} else if (build.getResult().equals(Result.FAILURE)) {
-			buildSummary = "ビルドが失敗しました\n";
-		} else if (build.getResult().equals(Result.UNSTABLE)) {
-			buildSummary = "ビルドが不安定です\n";
-		} else if (build.getResult().equals(Result.SUCCESS)) {
-			buildSummary = "ビルドが成功しました\n";
-		} else {
-			throw new RuntimeException("ビルドの結果が、想定していない状態です");
+	private String makeMessage(AbstractBuild<?, ?> build) {
+		final StringBuilder message = new StringBuilder();
+		message.append(toBuildSummary(build));
+		message.append(" [project: ");
+		message.append(build.getProject().getDisplayName());
+		message.append("]");
+		message.append("\n");
+		final String rootUrl = Jenkins.getInstance().getRootUrl();
+		if (rootUrl == null) {
+			throw new IllegalStateException(
+					"Root URL isn't configured yet. Cannot compute absolute URL.");
 		}
-		return buildSummary;
+		message.append(rootUrl);
+		message.append(build.getUrl());
+		return message.toString();
+	}
+
+	private String toBuildSummary(AbstractBuild<?, ?> build) {
+		if (build.getResult().equals(Result.ABORTED)) {
+			return "Build aborted.";
+		} else if (build.getResult().equals(Result.FAILURE)) {
+			return "Build failed.";
+		} else if (build.getResult().equals(Result.UNSTABLE)) {
+			return "Build became unstabled.";
+		} else if (build.getResult().equals(Result.SUCCESS)) {
+			return "Build successful.";
+		}
+		throw new RuntimeException("Unknown build result.");
+	}
+
+	@Extension
+	public static final class DescriptorImpl extends
+			BuildStepDescriptor<Publisher> {
+
+		@Override
+		public boolean isApplicable(Class<? extends AbstractProject> jobType) {
+			return true;
+		}
+
+		@Override
+		public String getDisplayName() {
+			return "Discussに通知";
+		}
 	}
 
 }
