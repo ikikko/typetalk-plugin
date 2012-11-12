@@ -1,52 +1,28 @@
 package org.jenkinsci.plugins.discuss;
 
-import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.Result;
 import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
-import hudson.tasks.Publisher;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.List;
 
 import jenkins.model.Jenkins;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
-import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
-import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
-import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
-
 public class DiscussNotifier extends Notifier {
 
-	private static final String DISCUSS_URL = "https://discuss.nulab.co.jp";
-	private static final String DISCUSS_SIGNIN_URL = DISCUSS_URL + "/signin";
-	private static final String ACTION_URI = "/teams/nulab/topics";
-	private static final String DISCUSS_TOPICS_URL = DISCUSS_URL + ACTION_URI;
-
-	public final String name;
-	public final String password;
+	public final String apiKey;
 	public final String topicNumber;
 	public final boolean notifyWhenSuccess;
 
-	// TODO HTMLUnitでのスクレイピングから、DiscussのAPIに切り替える
-	private transient WebClient client;
-
 	@DataBoundConstructor
-	public DiscussNotifier(String name, String password, String topicNumber,
+	public DiscussNotifier(String apiKey, String topicNumber,
 			boolean notifyWhenSuccess) {
-		this.name = name;
-		this.password = password;
+		this.apiKey = apiKey;
 		this.topicNumber = topicNumber;
 		this.notifyWhenSuccess = notifyWhenSuccess;
 	}
@@ -67,44 +43,21 @@ public class DiscussNotifier extends Notifier {
 
 		listener.getLogger().println("Discussに通知中...");
 
-		// TODO HtmlUnit実行時のログが不要に出ているので、制御する
-		initClient();
-		login();
-		notifyMessage(build);
+		Long topicId = Long.valueOf(topicNumber);
+
+		String buildSummary = makeBuildSummary(build);
+		String buildUrl = Jenkins.getInstance().getRootUrl() + build.getUrl();
+		String message = buildSummary + buildUrl;
+
+		Discuss discuss = new Discuss(apiKey);
+		discuss.postMessage(topicId, message);
 
 		return true;
 	}
 
-	/**
-	 * WebClientの初期設定を行う
-	 */
-	private void initClient() {
-		client = new WebClient();
-		client.setJavaScriptEnabled(false);
-	}
 
-	/**
-	 * Discussにログインする
-	 */
-	private void login() throws IOException, MalformedURLException {
-		HtmlPage page = client.getPage(DISCUSS_SIGNIN_URL);
-
-		HtmlForm form = page.getForms().get(0);
-		HtmlTextInput nameField = form.getInputByName("name");
-		HtmlPasswordInput passwordField = form.getInputByName("password");
-
-		nameField.setValueAttribute(name);
-		passwordField.setValueAttribute(password);
-
-		getSubmitButton(form).click();
-	}
-
-	/**
-	 * Discussにメッセージを通知する
-	 */
-	private void notifyMessage(AbstractBuild<?, ?> build) throws IOException,
-			MalformedURLException {
-		String buildSummary;
+	private String makeBuildSummary(AbstractBuild<?, ?> build) {
+		final String buildSummary;
 		if (build.getResult().equals(Result.ABORTED)) {
 			buildSummary = "ビルドが中止されました\n";
 		} else if (build.getResult().equals(Result.FAILURE)) {
@@ -116,43 +69,7 @@ public class DiscussNotifier extends Notifier {
 		} else {
 			throw new RuntimeException("ビルドの結果が、想定していない状態です");
 		}
-		String buildUrl = Jenkins.getInstance().getRootUrl() + build.getUrl();
-
-		HtmlPage page = client.getPage(DISCUSS_TOPICS_URL + "/" + topicNumber);
-		HtmlForm form = (HtmlForm) page.getByXPath(
-				"//form[@action='" + ACTION_URI + "']").get(0);
-		HtmlTextArea message = (HtmlTextArea) form.getElementsByTagName(
-				"textarea").get(0);
-		message.setText(buildSummary + buildUrl);
-
-		// form.getActionAttribute にはトピック番号が付いていないので、自分で付ける
-		form.setActionAttribute(ACTION_URI + "/" + topicNumber);
-
-		getSubmitButton(form).click();
-	}
-
-	/**
-	 * フォームのsubmitボタンを取得する
-	 */
-	private HtmlSubmitInput getSubmitButton(HtmlForm form) {
-		List<?> submits = form.getByXPath("//input[@type='submit']");
-
-		return (HtmlSubmitInput) submits.get(0);
-	}
-
-	@Extension
-	public static final class DescriptorImpl extends
-			BuildStepDescriptor<Publisher> {
-
-		@Override
-		public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-			return true;
-		}
-
-		@Override
-		public String getDisplayName() {
-			return "Discussに通知";
-		}
+		return buildSummary;
 	}
 
 }

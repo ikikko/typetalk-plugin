@@ -20,7 +20,8 @@ repositories {
 
 dependencies {
 	groovy 'org.codehaus.groovy:groovy-all:1.8.7'
-	compile 'net.sourceforge.htmlunit:htmlunit:2.10'
+//	compile 'net.sourceforge.htmlunit:htmlunit:2.10'
+	compile 'com.google.http-client:google-http-client-jackson:1.12.0-beta'
 //	testCompile 'org.spockframework:spock-core:0.6-groovy-1.8'
 	jenkinsTest 'org.jenkins-ci.plugins:ant:1.1@jar',
 				'org.jenkins-ci.plugins:javadoc:1.0@jar'
@@ -40,6 +41,10 @@ jenkinsPlugin {
 		developer {
 			id 'ikikko'
 			name 'Tomonari Nakamura'
+		}
+		developer {
+			id 'baba'
+			name 'Yasuyuki Baba'
 		}
 	}
 }
