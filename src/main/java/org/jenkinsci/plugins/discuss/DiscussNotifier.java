@@ -78,9 +78,9 @@ public class DiscussNotifier extends Notifier {
 		if (build.getResult().equals(Result.ABORTED)) {
 			return "Build aborted.";
 		} else if (build.getResult().equals(Result.FAILURE)) {
-			return "Build failed.";
+			return "Build failure.";
 		} else if (build.getResult().equals(Result.UNSTABLE)) {
-			return "Build became unstabled.";
+			return "Build unstable.";
 		} else if (build.getResult().equals(Result.SUCCESS)) {
 			return "Build successful.";
 		}
