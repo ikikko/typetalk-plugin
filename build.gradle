@@ -2,7 +2,7 @@ buildscript {
 	repositories {
 		maven {
 			name 'jenkins'
-			delegate.url('http://maven.jenkins-ci.org/content/repositories/releases/')
+			delegate.url('http://repo.jenkins-ci.org/public/')
 		}
 		mavenCentral()
 	}
@@ -16,6 +16,10 @@ apply plugin: 'eclipse'
 
 repositories {
 	mavenCentral()
+	maven {
+		name "jenkins"
+		delegate.url("http://repo.jenkins-ci.org/public/")
+	}
 }
 
 dependencies {
