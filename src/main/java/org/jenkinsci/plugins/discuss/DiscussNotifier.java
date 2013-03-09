@@ -82,7 +82,14 @@ public class DiscussNotifier extends Notifier {
 	 * @return 通知対象ならばビルドの要約メッセージ、通知対象でないならば {@code null}
 	 */
 	private String toBuildSummary(AbstractBuild<?, ?> build) {
-		// ビルド成功で、"ビルドが成功した場合も通知する"がオフの場合、スキップする)
+		// ビルドが成功に戻った場合
+		if (build.getResult().equals(Result.SUCCESS)
+				&& build.getPreviousBuild() != null
+				&& build.getPreviousBuild().getResult().isWorseThan(Result.SUCCESS)) {
+			return "Build recovered.";
+		}
+
+		// ビルド成功で "ビルドが成功した場合も通知する" がオフの場合、通知しない
 		if (build.getResult().equals(Result.SUCCESS) && notifyWhenSuccess == false) {
 			return null;
 		}
