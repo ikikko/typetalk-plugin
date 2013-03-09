@@ -8,7 +8,7 @@ class DiscussNotifierSpec extends Specification {
 
 	def "各種条件に応じた toBuildSummary のテストを行う"() {
 		setup:
-		def notifier = new DiscussNotifier('', '', notifyWhenSuccess)
+		def notifier = new DiscussNotifier(notifyWhenSuccess)
 		def build = makeMockBuild(result, previousResult)
 
 		expect:

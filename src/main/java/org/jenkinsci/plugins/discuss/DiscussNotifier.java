@@ -10,6 +10,7 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
+import hudson.util.Secret;
 
 import java.io.IOException;
 
@@ -20,16 +21,27 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 public class DiscussNotifier extends Notifier {
 
-	public final String apiKey;
+	public final Secret apiKey;
 	public final String topicNumber;
 	public final boolean notifyWhenSuccess;
 
 	@DataBoundConstructor
 	public DiscussNotifier(String apiKey, String topicNumber,
 			boolean notifyWhenSuccess) {
-		this.apiKey = apiKey;
+		this.apiKey = Secret.fromString(apiKey);
 		this.topicNumber = topicNumber;
 		this.notifyWhenSuccess = notifyWhenSuccess;
+	}
+
+	// for test
+	DiscussNotifier(boolean notifyWhenSuccess) {
+		this.apiKey = null;
+		this.topicNumber = null;
+		this.notifyWhenSuccess = notifyWhenSuccess;
+	}
+
+	public String getApiKey() {
+		return Secret.toString(apiKey);
 	}
 
 	@Override
@@ -56,7 +68,7 @@ public class DiscussNotifier extends Notifier {
 		// Discussに通知中...
 		listener.getLogger().println("Notifying to the discuss...");
 
-		Discuss discuss = new Discuss(apiKey);
+		Discuss discuss = new Discuss(getApiKey());
 		discuss.postMessage(topicId, message);
 
 		return true;
