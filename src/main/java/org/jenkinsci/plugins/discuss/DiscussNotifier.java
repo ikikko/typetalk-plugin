@@ -15,6 +15,7 @@ import java.io.IOException;
 
 import jenkins.model.Jenkins;
 
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 public class DiscussNotifier extends Notifier {
@@ -37,19 +38,23 @@ public class DiscussNotifier extends Notifier {
 	}
 
 	@Override
-	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
-			BuildListener listener) throws InterruptedException, IOException {
-		// 成功だったらスキップする("ビルドが成功した場合も通知する"がオフの場合)
-		if (build.getResult().equals(Result.SUCCESS)
-				&& notifyWhenSuccess == false) {
+	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
+			throws InterruptedException, IOException {
+		String buildSummary = toBuildSummary(build);
+		if (buildSummary == null) {
 			return true;
 		}
 
+		final String rootUrl = Jenkins.getInstance().getRootUrl();
+		if (StringUtils.isEmpty(rootUrl)) {
+			throw new IllegalStateException("Root URL isn't configured yet. Cannot compute absolute URL.");
+		}
+
+		String message = makeMessage(build, buildSummary, rootUrl);
+		Long topicId = Long.valueOf(topicNumber);
+
 		// Discussに通知中...
 		listener.getLogger().println("Notifying to the discuss...");
-
-		Long topicId = Long.valueOf(topicNumber);
-		String message = makeMessage(build);
 
 		Discuss discuss = new Discuss(apiKey);
 		discuss.postMessage(topicId, message);
@@ -57,24 +62,31 @@ public class DiscussNotifier extends Notifier {
 		return true;
 	}
 
-	private String makeMessage(AbstractBuild<?, ?> build) {
+	private String makeMessage(AbstractBuild<?, ?> build, String buildSummary, String rootUrl) {
 		final StringBuilder message = new StringBuilder();
-		message.append(toBuildSummary(build));
+		message.append(buildSummary);
 		message.append(" [project: ");
 		message.append(build.getProject().getDisplayName());
 		message.append("]");
 		message.append("\n");
-		final String rootUrl = Jenkins.getInstance().getRootUrl();
-		if (rootUrl == null) {
-			throw new IllegalStateException(
-					"Root URL isn't configured yet. Cannot compute absolute URL.");
-		}
 		message.append(rootUrl);
 		message.append(build.getUrl());
 		return message.toString();
 	}
 
+	/**
+	 * ビルドの要約メッセージを取得する。
+	 * 
+	 * @param build
+	 *            ビルド
+	 * @return 通知対象ならばビルドの要約メッセージ、通知対象でないならば {@code null}
+	 */
 	private String toBuildSummary(AbstractBuild<?, ?> build) {
+		// ビルド成功で、"ビルドが成功した場合も通知する"がオフの場合、スキップする)
+		if (build.getResult().equals(Result.SUCCESS) && notifyWhenSuccess == false) {
+			return null;
+		}
+
 		if (build.getResult().equals(Result.ABORTED)) {
 			return "Build aborted.";
 		} else if (build.getResult().equals(Result.FAILURE)) {
