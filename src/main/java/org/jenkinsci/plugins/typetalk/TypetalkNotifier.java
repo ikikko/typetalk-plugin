@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.discuss;
+package org.jenkinsci.plugins.typetalk;
 
 import hudson.Extension;
 import hudson.Launcher;
@@ -19,14 +19,14 @@ import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-public class DiscussNotifier extends Notifier {
+public class TypetalkNotifier extends Notifier {
 
 	public final Secret apiKey;
 	public final String topicNumber;
 	public final boolean notifyWhenSuccess;
 
 	@DataBoundConstructor
-	public DiscussNotifier(String apiKey, String topicNumber,
+	public TypetalkNotifier(String apiKey, String topicNumber,
 			boolean notifyWhenSuccess) {
 		this.apiKey = Secret.fromString(apiKey);
 		this.topicNumber = topicNumber;
@@ -34,7 +34,7 @@ public class DiscussNotifier extends Notifier {
 	}
 
 	// for test
-	DiscussNotifier(boolean notifyWhenSuccess) {
+	TypetalkNotifier(boolean notifyWhenSuccess) {
 		this.apiKey = null;
 		this.topicNumber = null;
 		this.notifyWhenSuccess = notifyWhenSuccess;
@@ -65,11 +65,11 @@ public class DiscussNotifier extends Notifier {
 		String message = makeMessage(build, buildSummary, rootUrl);
 		Long topicId = Long.valueOf(topicNumber);
 
-		// Discussに通知中...
-		listener.getLogger().println("Notifying to the discuss...");
+		// Typetalkに通知中...
+		listener.getLogger().println("Notifying to the typetalk...");
 
-		Discuss discuss = new Discuss(getApiKey());
-		discuss.postMessage(topicId, message);
+		Typetalk typetalk = new Typetalk(getApiKey());
+		typetalk.postMessage(topicId, message);
 
 		return true;
 	}
@@ -129,7 +129,7 @@ public class DiscussNotifier extends Notifier {
 
 		@Override
 		public String getDisplayName() {
-			return "Discussに通知";
+			return "Typetalkに通知";
 		}
 	}
 

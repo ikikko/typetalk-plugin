@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.discuss;
+package org.jenkinsci.plugins.typetalk;
 
 import java.io.IOException;
 
@@ -14,8 +14,9 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson.JacksonFactory;
 
-public class Discuss {
+public class Typetalk {
 
+	// TODO url should be changed.
 	private static final String BASE_URL = "https://discuss.nulab.co.jp";
 
 	private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
@@ -34,12 +35,12 @@ public class Discuss {
 
 	private final String apiKey;
 
-	public Discuss(final String apiKey) {
+	public Typetalk(final String apiKey) {
 		this.apiKey = apiKey;
 	}
 
 	/**
-	 * Discussにメッセージを通知する
+	 * Typetalkにメッセージを通知する
 	 */
 	public void postMessage(final Long topicId, final String message)
 			throws IOException {

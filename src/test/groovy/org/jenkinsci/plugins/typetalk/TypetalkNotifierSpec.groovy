@@ -1,16 +1,16 @@
-package org.jenkinsci.plugins.discuss
+package org.jenkinsci.plugins.typetalk
 
 import hudson.model.AbstractBuild
 import hudson.model.Result
 import spock.lang.Specification
 import spock.lang.Unroll
 
-class DiscussNotifierSpec extends Specification {
+class TypetalkNotifierSpec extends Specification {
 
 	@Unroll
 	def "各種条件に応じた toBuildSummary のテストを行う"() {
 		setup:
-		def notifier = new DiscussNotifier(notifyWhenSuccess)
+		def notifier = new TypetalkNotifier(notifyWhenSuccess)
 		def build = makeMockBuild(result, previousResult)
 
 		expect:

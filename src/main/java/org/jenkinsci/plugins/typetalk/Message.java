@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.discuss;
+package org.jenkinsci.plugins.typetalk;
 
 import com.google.api.client.util.Key;
 

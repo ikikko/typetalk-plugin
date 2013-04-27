@@ -33,14 +33,14 @@ dependencies {
 }
 
 group = 'org.jenkinsci.plugins'
-version = '0.5'
-description = 'Discuss Plugin'
+version = '0.6'
+description = 'Typetalk Plugin'
 
 jenkinsPlugin {
 	coreVersion = '1.477'
-	displayName = 'Discuss Plugin'
-//	url = 'https://wiki.jenkins-ci.org/display/JENKINS/Discuss+Plugin'
-//	gitHubUrl = 'https://github.com/jenkinsci/discuss-plugin'
+	displayName = 'Typetalk Plugin'
+//	url = 'https://wiki.jenkins-ci.org/display/JENKINS/Typetalk+Plugin'
+//	gitHubUrl = 'https://github.com/jenkinsci/typetalk-plugin'
 
 	developers {
 		developer {
