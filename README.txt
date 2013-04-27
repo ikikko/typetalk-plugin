@@ -2,6 +2,7 @@
 
 ** Eclipseプロジェクトへのインポート
 # gradle cleanEclipse eclipse
+ただし、Eclipse の workspace / project ともに groovy 1.8 に揃えないと、Eclipse 上で spock テストが実行できない
 
 ** 開発用にJenkins起動
 # gradle clean server
