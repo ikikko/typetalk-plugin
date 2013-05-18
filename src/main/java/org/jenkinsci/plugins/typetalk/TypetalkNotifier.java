@@ -77,9 +77,9 @@ public class TypetalkNotifier extends Notifier {
 	private String makeMessage(AbstractBuild<?, ?> build, String buildSummary, String rootUrl) {
 		final StringBuilder message = new StringBuilder();
 		message.append(buildSummary);
-		message.append(" [project: ");
+		message.append(" [ project : ");
 		message.append(build.getProject().getDisplayName());
-		message.append("]");
+		message.append(" ]");
 		message.append("\n");
 		message.append(rootUrl);
 		message.append(build.getUrl());
@@ -98,7 +98,7 @@ public class TypetalkNotifier extends Notifier {
 		if (build.getResult().equals(Result.SUCCESS)
 				&& build.getPreviousBuild() != null
 				&& build.getPreviousBuild().getResult().isWorseThan(Result.SUCCESS)) {
-			return "Build recovered.";
+			return ":smiley: Build recovered.";
 		}
 
 		// ビルド成功で "ビルドが成功した場合も通知する" がオフの場合、通知しない
@@ -107,13 +107,13 @@ public class TypetalkNotifier extends Notifier {
 		}
 
 		if (build.getResult().equals(Result.ABORTED)) {
-			return "Build aborted.";
+			return ":astonished: Build aborted.";
 		} else if (build.getResult().equals(Result.FAILURE)) {
-			return "Build failure.";
+			return ":rage: Build failure.";
 		} else if (build.getResult().equals(Result.UNSTABLE)) {
-			return "Build unstable.";
+			return ":disappointed_relieved: Build unstable.";
 		} else if (build.getResult().equals(Result.SUCCESS)) {
-			return "Build successful.";
+			return ":smiley: Build successful.";
 		}
 		throw new RuntimeException("Unknown build result.");
 	}

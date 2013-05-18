@@ -13,30 +13,33 @@ class TypetalkNotifierSpec extends Specification {
 		def notifier = new TypetalkNotifier(notifyWhenSuccess)
 		def build = makeMockBuild(result, previousResult)
 
-		expect:
-		expected == notifier.toBuildSummary(build)
+		when:
+		def summary = notifier.toBuildSummary(build)
+
+		then:
+		summary ? summary.contains(expected) : expected == null
 
 		where:
 		notifyWhenSuccess | previousResult | result          || expected
 		false             | Result.SUCCESS | Result.SUCCESS  || null
-		false             | Result.SUCCESS | Result.UNSTABLE || 'Build unstable.'
-		false             | Result.SUCCESS | Result.FAILURE  || 'Build failure.'
-		false             | Result.SUCCESS | Result.ABORTED  || 'Build aborted.'
+		false             | Result.SUCCESS | Result.UNSTABLE || 'unstable'
+		false             | Result.SUCCESS | Result.FAILURE  || 'failure'
+		false             | Result.SUCCESS | Result.ABORTED  || 'aborted'
 
-		false             | Result.FAILURE | Result.SUCCESS  || 'Build recovered.'
-		false             | Result.FAILURE | Result.UNSTABLE || 'Build unstable.'
-		false             | Result.FAILURE | Result.FAILURE  || 'Build failure.'
-		false             | Result.FAILURE | Result.ABORTED  || 'Build aborted.'
+		false             | Result.FAILURE | Result.SUCCESS  || 'recovered'
+		false             | Result.FAILURE | Result.UNSTABLE || 'unstable'
+		false             | Result.FAILURE | Result.FAILURE  || 'failure'
+		false             | Result.FAILURE | Result.ABORTED  || 'aborted'
 
-		true              | Result.SUCCESS | Result.SUCCESS  || 'Build successful.'
-		true              | Result.SUCCESS | Result.UNSTABLE || 'Build unstable.'
-		true              | Result.SUCCESS | Result.FAILURE  || 'Build failure.'
-		true              | Result.SUCCESS | Result.ABORTED  || 'Build aborted.'
+		true              | Result.SUCCESS | Result.SUCCESS  || 'successful'
+		true              | Result.SUCCESS | Result.UNSTABLE || 'unstable'
+		true              | Result.SUCCESS | Result.FAILURE  || 'failure'
+		true              | Result.SUCCESS | Result.ABORTED  || 'aborted'
 
-		true              | Result.FAILURE | Result.SUCCESS  || 'Build recovered.'
-		true              | Result.FAILURE | Result.UNSTABLE || 'Build unstable.'
-		true              | Result.FAILURE | Result.FAILURE  || 'Build failure.'
-		true              | Result.FAILURE | Result.ABORTED  || 'Build aborted.'
+		true              | Result.FAILURE | Result.SUCCESS  || 'recovered'
+		true              | Result.FAILURE | Result.UNSTABLE || 'unstable'
+		true              | Result.FAILURE | Result.FAILURE  || 'failure'
+		true              | Result.FAILURE | Result.ABORTED  || 'aborted'
 	}
 
 	def makeMockBuild(Result result, Result previousResult) {
