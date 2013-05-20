@@ -111,7 +111,7 @@ public class TypetalkNotifier extends Notifier {
 		} else if (build.getResult().equals(Result.FAILURE)) {
 			return ":rage: Build failure.";
 		} else if (build.getResult().equals(Result.UNSTABLE)) {
-			return ":disappointed_relieved: Build unstable.";
+			return ":cry: Build unstable.";
 		} else if (build.getResult().equals(Result.SUCCESS)) {
 			return ":smiley: Build successful.";
 		}
