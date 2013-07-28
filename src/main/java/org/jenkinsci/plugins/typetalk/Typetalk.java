@@ -2,11 +2,14 @@ package org.jenkinsci.plugins.typetalk;
 
 import java.io.IOException;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpContent;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.http.json.JsonHttpContent;
@@ -16,8 +19,7 @@ import com.google.api.client.json.jackson.JacksonFactory;
 
 public class Typetalk {
 
-	// TODO url should be changed.
-	private static final String BASE_URL = "https://discuss.nulab.co.jp";
+	private static final String BASE_URL = "https://typetalk.in";
 
 	private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
 
@@ -52,13 +54,19 @@ public class Typetalk {
 				messageObj);
 		final HttpRequest request = REQUEST_FACTORY.buildPostRequest(url,
 				content);
-		request.execute();
+		HttpResponse response = request.execute();
+		response.disconnect();
 	}
 
 	static class PostMessageUrl extends GenericUrl {
 
 		PostMessageUrl(String apiKey, Long topicId) {
-			super(BASE_URL + "/api/v1/topics/" + topicId + "?key=" + apiKey);
+			super(getBaseUrl() + "/api/v1/topics/" + topicId + "?key=" + apiKey);
+		}
+
+		private static String getBaseUrl() {
+			String baseUrl = System.getenv("TYPETALK_BASE_URL");
+			return StringUtils.isEmpty(baseUrl) ? BASE_URL : baseUrl;
 		}
 
 	}

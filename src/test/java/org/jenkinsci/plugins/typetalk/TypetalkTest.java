@@ -1,5 +1,7 @@
 package org.jenkinsci.plugins.typetalk;
 
+import java.util.Date;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -15,7 +17,7 @@ public class TypetalkTest {
 	@Ignore("not post usually")
 	public void postMessage() throws Exception {
 		Typetalk typetalk = new Typetalk(API_KEY);
-		typetalk.postMessage(9L, "test"); // topic: Labs
+		typetalk.postMessage(9L, "test : " + new Date()); // topic: Labs
 	}
 
 }
