@@ -1,0 +1,23 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+	<!--
+		This jelly script is used for per-project configuration.
+		See global.jelly for a general discussion about jelly script.
+	-->
+
+	<f:entry title="credential">
+		<select class="setting-input" name="credential.name" description="Select configured credential">
+			<j:forEach var="credential" items="${descriptor.credentials}">
+				<f:option selected="${credential.name.equals(instance.name)}">${credential.name}</f:option>
+			</j:forEach>
+		</select>
+	</f:entry>
+
+	<f:entry title="トピック番号" field="topicNumber">
+		<f:textbox />
+	</f:entry>
+
+	<f:entry title="ビルドが成功した場合も通知する" field="notifyWhenSuccess">
+		<f:checkbox />
+	</f:entry>
+
+</j:jelly>

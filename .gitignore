@@ -6,3 +6,4 @@ work/
 .project
 .settings/
 classes/
+src/test/resources/config.properties

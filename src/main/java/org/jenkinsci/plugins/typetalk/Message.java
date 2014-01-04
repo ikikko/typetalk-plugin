@@ -5,21 +5,13 @@ import com.google.api.client.util.Key;
 public class Message {
 
 	@Key
-	private Long topicId;
-
-	@Key
 	private String message;
 
 	@Key
 	private Long replyTo;
 
-	public Long getTopicId() {
-		return topicId;
-	}
-
-	public void setTopicId(Long topicId) {
-		this.topicId = topicId;
-	}
+	@Key
+	private String[] fileKeys;
 
 	public String getMessage() {
 		return message;
@@ -35,6 +27,14 @@ public class Message {
 
 	public void setReplyTo(Long replyTo) {
 		this.replyTo = replyTo;
+	}
+
+	public String[] getFileKeys() {
+		return fileKeys;
+	}
+
+	public void setFileKeys(String[] fileKeys) {
+		this.fileKeys = fileKeys;
 	}
 
 }
