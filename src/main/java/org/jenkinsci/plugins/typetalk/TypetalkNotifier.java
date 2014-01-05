@@ -79,7 +79,7 @@ public class TypetalkNotifier extends Notifier {
 	private String makeMessage(AbstractBuild<?, ?> build, String buildSummary, String rootUrl) {
 		final StringBuilder message = new StringBuilder();
 		message.append(buildSummary);
-		message.append(" [ project : ");
+		message.append(" [ ");
 		message.append(build.getProject().getDisplayName());
 		message.append(" ]");
 		message.append("\n");
