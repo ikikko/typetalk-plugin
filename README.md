@@ -1,27 +1,25 @@
-# ビルドの方法
+This is a Jenkins plugin which notifies to Typetalk ( https://typetalk.in/ )
+
+# How to build
 - ref : https://wiki.jenkins-ci.org/display/JENKINS/Gradle+JPI+Plugin
 
-## プロジェクトへのインポート
+## Import to IDE
 
 ```
 gradle cleanEclipse eclipse
 gradle cleanIdea idea
 ```
 
-ただし、Eclipse の場合、 workspace / project ともに groovy 1.8 に揃えないと、Eclipse 上で spock テストが実行できません
-
-## 開発用にJenkins起動
+## Launch for development
 
 ```
 gradle clean server
 ```
 
-## プラグインファイル（JPIファイル）を作成
+## Package a plugin file
 
 ```
 gradle clean jpi
 ```
 
-gradleをインストールしていない場合は、gradleの代わりにgradlew(もしくはgradlew.bat)を使用できます
-
-- ref : http://gradle.monochromeroad.com/docs/userguide/gradle_wrapper.html
+If you don't install gradle, you can use gradlew / gradlew.bat instead of gradle.
